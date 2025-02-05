@@ -3,7 +3,9 @@ import { isAdmin, requireSignIn } from '../middlewares/authMiddleware.js'
 import {
     createProductController, deleteProductController, getAllUsersController, getProductController,
     getSingleProductController, productCountController, productFiltersController, productListController, productPhotoController,
-    updateProductController
+    updateNameProductController,
+    updateProductController,
+    updateuserProductController
 } from '../controllers/productController.js'
 import formidable from 'express-formidable'
 
@@ -12,9 +14,14 @@ const router = express.Router()
 //routes
 router.post('/create-product',  formidable(), createProductController)
 
-router.put('/update-product/:pid', requireSignIn, isAdmin, formidable(), updateProductController)
+router.put('/update-product/:pid', requireSignIn,formidable(),  updateProductController) 
+
+router.put('/update-userProduct/:pid', requireSignIn, formidable(), updateuserProductController )
+
+router.put('/update-name/:pid', requireSignIn,   updateNameProductController)
 
 router.get('/get-product', getProductController)
+
 
 
 //fetching single product

@@ -192,6 +192,94 @@ export const updateProductController = async (req, res) => {
 };
 
 
+//Update Name Controller
+
+export const updateNameProductController = async (req, res) => {
+    try {
+        const { name } = req.body; // Extract only the name field
+
+        if (!name) {
+            return res.status(400).send({ error: "Name is required" });
+        }
+
+        const product = await productModel.findByIdAndUpdate(
+            req.params.pid,
+            { name },
+            { new: true }
+        );
+
+        if (!product) {
+            return res.status(404).send({ error: "Product not found" });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Product name updated successfully",
+            product,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: "Error while updating product name",
+            error,
+        });
+    }
+};
+
+//update (user)
+
+export const updateuserProductController = async (req, res) => {
+    try {
+        const { name, description, email, quantity, shipping } = req.fields;
+        const { photo } = req.files;
+
+        // Validation
+        if (!name) return res.status(400).send({ error: "Name is required" });
+        if (!description) return res.status(400).send({ error: "Description is required" });
+        if (!email) return res.status(400).send({ error: "Email is required" });
+        // if (!category) return res.status(400).send({ error: "Category is required" });
+        // if (!quantity) return res.status(400).send({ error: "Quantity is required" });
+        if (photo && photo.size > 2000000) {
+            return res.status(400).send({ error: "Photo should be less than 2MB" });
+        }
+
+        // Find and update the product by ID
+        const product = await productModel.findByIdAndUpdate(
+            req.params.pid,
+            { ...req.fields },
+            { new: true }
+        );
+
+        if (!product) {
+            return res.status(404).send({ error: "Product not found" });
+        }
+
+        // Handle photo update
+        if (photo) {
+            product.photo.data = fs.readFileSync(photo.path);
+            product.photo.contentType = photo.type;
+            await product.save();
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Product updated successfully",
+            product,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: "Error while updating product",
+            error,
+        });
+    }
+}; 
+
+
+
+
 //filters
 export const productFiltersController = async (req, res) => {
     try {
